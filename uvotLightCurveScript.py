@@ -2,7 +2,6 @@
 
 # Reduce Swift data to finished light curves. This script follows my guide for
 # uvot light curve reduction which follows the information on Swift's wedbsite
- 
 
 # User inputs the object and observations that will be reduced
 object = raw_input("Input object name: ") 
@@ -22,9 +21,10 @@ plot2 = raw_input("Should a single plot with multiple lightcurves be plotted? ")
 
 # create a directory for output
 import os # import os module to use system for command line input
-dir_out = "%s_%s_%s" % (initial, final, object)
+initial_final = "%s_%s" % (initial, final)
 os.system("mkdir /Users/Stephanie/Swift/uvotLightCurveOutput/%s" % (object))
-os.system("mkdir /Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s" % (object, dir_out))
+directory_out = "/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s" % (object, initial_final)
+os.system("mkdir %s" % (directory_out))
 
 # ask user if gunzip should be run
 gz_run = raw_input("Should gzip be run on files? Enter yes or no: ") 
@@ -115,9 +115,9 @@ for x in range(filter_num_int):
             
             # use system fom os module to run the ftool command uvotimsum
             # first coadd the sky image file
-            os.system("uvotimsum infile = /Users/Stephanie/Swift/%s/%s/uvot/image/%s outfile = /Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/%s exclude = %s clobber = yes" % (object, obsID, sky_file, object, dir_out, usum_sky_file, exclude_str))
+            os.system("uvotimsum infile = /Users/Stephanie/Swift/%s/%s/uvot/image/%s outfile = %s/%s exclude = %s clobber = yes" % (object, obsID, sky_file, directory_out, usum_sky_file, exclude_str))
             # then coadd the exposure map image file
-            os.system("uvotimsum infile = /Users/Stephanie/Swift/%s/%s/uvot/image/%s outfile = /Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/%s exclude = %s clobber = yes" % (object, obsID, exp_file, object, dir_out, usum_ex_file, exclude_str))
+            os.system("uvotimsum infile = /Users/Stephanie/Swift/%s/%s/uvot/image/%s outfile = %s/%s exclude = %s clobber = yes" % (object, obsID, exp_file, directory_out, usum_ex_file, exclude_str))
 
             # Run uvotsource to do photometry using data from the sky image 
             # file the exposure map file and calibration data from the 
@@ -138,7 +138,7 @@ for x in range(filter_num_int):
             # here I run it on my summed file for each observation of a single
             # filter (there is only one extension). Every output table is put
             # into the same file for every observation of a single filter
-            os.system("uvotsource image = /Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/%s srcreg = /Users/Stephanie/Swift/%s/source5.reg bkgreg = /Users/Stephanie/Swift/%s/backgr.reg sigma = 5 expfile = /Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/%s outfile = /Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/%s" % (object, dir_out, usum_sky_file, object, object, object, dir_out, usum_ex_file, object, dir_out, photometry_out))
+            os.system("uvotsource image = %s/%s srcreg = /Users/Stephanie/Swift/%s/source5.reg bkgreg = /Users/Stephanie/Swift/%s/backgr.reg sigma = 5 expfile = %s/%s outfile = %s/%s" % (directory_out, usum_sky_file, object, object,directory_out, usum_ex_file, directory_out, photometry_out))
     
     # plot a lightcurve for eachfilter if prompted
     if plot1 == 'yes':
@@ -171,7 +171,7 @@ for x in range(filter_num_int):
 
         # open the fits file that contains all of the magnitudes ouput
         # using uvotsource on each observation for a single filter
-        hdulist2 = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/%s" % (objec, dir_out, photometry_out))
+        hdulist2 = fits.open("%s/%s" % (directory_out, photometry_out))
         tbdata =  hdulist2[1].data # set variable to table of data in hdulist
         y = [] # empty list for y values in plot
         # get magnitude values from table in fits file
@@ -220,7 +220,7 @@ if plot2 == 'yes':
 
     # open the fits file that contains all of the magnitudes ouput          
     # using uvotsource on each observation for b filter              
-    hdulistB = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/bb_photOut.fits" % (object, dir_out))
+    hdulistB = fits.open("%s/%s" % (directory_out, photometry_out))
     tbdataB =  hdulistB[1].data # set variable to table of data in hdulist   
     yB = [] # empty list for y values in plot                                
         # get magnitude values from table in fits file                          
@@ -243,7 +243,7 @@ if plot2 == 'yes':
 
     # open the fits file that contains all of the magnitudes ouput            
     # using uvotsource on each observation for m2 filter                    
-    hdulistM2 = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/m2_photOut.fits" % (object, dir_out))
+    hdulistM2 = fits.open("%s/%s" % (directory_out, photometry_out))
     tbdataM2 =  hdulistM2[1].data # set variable to table of data in hdulist  
     yM2 = [] # empty list for y values in plot                               
     
@@ -267,7 +267,7 @@ if plot2 == 'yes':
 
     # open the fits file that contains all of the magnitudes ouput         
     # using uvotsource on each observation for u filter                      
-    hdulistU = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/uu_photOut.fits" % (object, dir_out))
+    hdulistU = fits.open("%s/%s" % (directory_out, photometry_out))
     tbdataU =  hdulistU[1].data # set variable to table of data in hdulist 
     yU = [] # empty list for y values in plot                                
     # get magnitude values from table in fits file                           
@@ -289,7 +289,7 @@ if plot2 == 'yes':
     
     # open the fits file that contains all of the magnitudes ouput            
     # using uvotsource on each observation for V filter                     
-    hdulistV = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/vv_photOut.fits" % (object, dir_out))
+    hdulistV = fits.open("%s/%s" % (directory_out, photometry_out))
     tbdataV =  hdulistV[1].data # set variable to table of data in hdulist
 
     yV = [] # empty list for y values in plot                                
@@ -313,7 +313,7 @@ if plot2 == 'yes':
 
     # open the fits file that contains all of the magnitudes ouput            
     # using uvotsource on each observation for w1 filter                 
-    hdulistW1 = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/w1_photOut.fits" % (object, dir_out))
+    hdulistW1 = fits.open("%s/%s" % (directory_out, photometry_out))
     tbdataW1 =  hdulistW1[1].data # set variable to table of data in hdulist  
     yW1 = [] # empty list for y values in plot                             
     # get magnitude values from table in fits file                   
@@ -335,7 +335,7 @@ if plot2 == 'yes':
                                
     # open the fits file that contains all of the magnitudes ouput         
     # using uvotsource on each observation for w2 filter                
-    hdulistW2 = fits.open("/Users/Stephanie/Swift/uvotLightCurveOutput/%s/%s/w2_photOut.fits" % (object, dir_out))
+    hdulistW2 = fits.open("%s/%s" % (directory_out, photometry_out))
     tbdataW2 =  hdulistW2[1].data # set variable to table of data in hdulist 
 
     yW2 = [] # empty list for y values in plot                             
@@ -410,25 +410,68 @@ if plot2 == 'yes':
                 smartsV_error.append(smarts_V_err)
         v = v + 1
 
-    f.close() # close file 
+    f.close() # close file
 
+    # extract Fermi data from previously downloaded files
+    
+    # open the fits file previously downloaded from the Fermi website
+    # ask the user the name of the Fermi data file
+    file_name = raw_input("What is the Fermi file name? ")
+    hdulistLAT = fits.open("/Users/Stephanie/Fermi/%s/%s" % (object, file_name))
+    tbdataLAT = hdulistLAT[1].data # set variable to table of data in hdulist
+    
+    yLAT = [] # empty list for y values (magnitudes)
+    
+    for energy in tbdataLAT.field('ENERGY'):
+        yLAT.append(energy)
+
+    xLAT = [] # empty list for the x values (time)
+    
+    for time_seconds_MET in tbdataLAT.field('TIME'):
+        time_days_MET = time_seconds_MET/86400 # convert seconds to days
+        # MET begins at midnight Jan 1, 2014
+        time_mJD = 51910 + time_days_MET # convert to MJD
+        xLAT.append(time_MJD)
+    hdulistLAT.close()
+
+    # PLot only for the specified time
+    time_initial = min(xB[0], xM2[0], xU[0], xV[0], xW1[0], xW2[0])
+    time_final = max(xB[len(xB)-1], xM2[len(xM2)-1], xU[len(xU)-1], xV[len(xV) - 1], xW1[len(xW1)-1], xW2[len(xW2)-1])
+
+    xLATplot = [] # empty list for x values that will be plotted
+    yLATplot = [] # empty list for y values that will be plotted
+    
+    yy = 0 # initiate the y apendix
+    for item in xLAT:
+        if item >= time_initial and item <= time_final:
+            xLATplot.append(item)
+            yLATplot.append(yLAT[yy])
+        yy = yy + 1
+    
     # Plot magnitude vs time (x vs y) in a single scatter plot if prompted
     if plot2 == 'yes':
-        fig, ax = plt.subplots()
-        ax.errorbar(xB,yB, yerr=y_errorB, color='blue', fmt='o', label='B')
-        ax.errorbar(xM2,yM2, yerr=y_errorM2, color='purple', fmt='o', label='UVM2')
-        ax.errorbar(xU,yU, yerr=y_errorU, color='green', fmt='o', label='U')
-        ax.errorbar(xV,yV, yerr=y_errorV, color='red', fmt='o', label='V')
-        ax.errorbar(xW1,yW1, yerr=y_errorW1, color='cyan', fmt='o', label='UVW1')
-        ax.errorbar(xW2,yW2, yerr=y_errorW2, color='orange', fmt='o', label='UVW2')
-        ax.errorbar(smartsB_x,smartsB_y, yerr=smartsB_error, color='black', fmt='o', label='Smarts B')
-        ax.errorbar(smartsV_x,smartsV_y, yerr=smartsV_error, color='magenta', fmt='o', label='Smarts V')
-        plt.xlabel('MJD')
+        fig, (ax0, ax1) = plt.subplots(nrows=2, sharex=True)
+        ax0.errorbar(xB,yB, yerr=y_errorB, color='blue', fmt='o', label='B')
+        ax0.errorbar(xM2,yM2, yerr=y_errorM2, color='purple', fmt='o', label='UVM2')
+        ax0.errorbar(xU,yU, yerr=y_errorU, color='green', fmt='o', label='U')
+        ax0.errorbar(xV,yV, yerr=y_errorV, color='red', fmt='o', label='V')
+        ax0.errorbar(xW1,yW1, yerr=y_errorW1, color='cyan', fmt='o', label='UVW1')
+        ax0.errorbar(xW2,yW2, yerr=y_errorW2, color='orange', fmt='o', label='UVW2')
+        ax0.errorbar(smartsB_x,smartsB_y, yerr=smartsB_error, color='black', fmt='o', label='Smarts B')
+        ax0.errorbar(smartsV_x,smartsV_y, yerr=smartsV_error, color='magenta', fmt='o', label='Smarts V')
         plt.ylabel('Magnitude')
         plt.title(object)
+        plt.legend(bbox_to_anchor=(1, 1), loc=2)
+        
+        ax1.scatter(xLATplot, yLATplot, color = 'gray')
+        plt.xlabel('MJD')
+        plt.ylabel('Fermi')
+        plt.xlabel('MJD')
         fmt=matplotlib.ticker.ScalarFormatter(useOffset=False)
         fmt.set_scientific(False)
         gca().xaxis.set_major_formatter(fmt)
-        plt.legend(bbox_to_anchor=(1, 1), loc=2)
+        
         plt.show()
+ 
+
  
