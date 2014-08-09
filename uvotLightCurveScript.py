@@ -423,9 +423,11 @@ if plot2 == 'yes':
         ax0.set_ylabel('Magnitude')
         
         ax1.scatter(xLAT, yLAT, color = 'gray')
-        plt.ylabel('Fermi')
+        plt.ylabel('MeV')
         plt.xlabel('MJD')
         plt.subplots_adjust(bottom = 0.1, right = 0.8, top = 0.9)
+        xticklabels = ax0.get_xticklabels()
+        plt.setp(xticklabels, visible=False)
         fmt=matplotlib.ticker.ScalarFormatter(useOffset=False)
         fmt.set_scientific(False)
         gca().xaxis.set_major_formatter(fmt)
